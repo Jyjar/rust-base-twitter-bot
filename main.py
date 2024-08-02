@@ -27,8 +27,8 @@ client = tweepy.Client(bearerToken, apiKey, apiKeySecret, accessToken, accessTok
 auth = tweepy.OAuth1UserHandler(apiKey, apiKeySecret, accessToken, accessTokenSecret)
 api = tweepy.API(auth)
 
-# List of YouTube Channel IDs to monitor [ CrowRust, FadedRust., dustgg, SecretBuilds]
-channel_ids = ["UCnuk6QPjyRA_SCE4I6RcPbA", "UCaDoxfzWNonZY0_dQbE1VcQ", "UCCD4iiHMnIbbOO-x7xlrfwQ", "UCggN2nAvCu2JbTSTm-FkqdA"]
+# List of YouTube Channel IDs to monitor [ CrowRust, FadedRust., dustgg, SecretBuilds, spinky]
+channel_ids = ["UCnuk6QPjyRA_SCE4I6RcPbA", "UCaDoxfzWNonZY0_dQbE1VcQ", "UCCD4iiHMnIbbOO-x7xlrfwQ", "UCggN2nAvCu2JbTSTm-FkqdA", "UCOPeeimwxtWjRDgim96Sxlg"]
 
 
 # Function to fetch the latest video
