@@ -10,6 +10,7 @@ import json
 import tweepy
 import requests
 import os
+import isodate
 
 # YouTube API Configuration
 youtubeDeveloperKey = os.getenv('YOUTUBE_API_KEY')
@@ -34,23 +35,47 @@ channel_ids = ["UCnuk6QPjyRA_SCE4I6RcPbA", "UCaDoxfzWNonZY0_dQbE1VcQ", "UCCD4iiH
 # Function to fetch the latest video
 def get_latest_video(channel_id):
     try:
-        request = youtube.search().list(
+        # Search for the latest video on the channel
+        search_request = youtube.search().list(
             part='snippet',
             channelId=channel_id,
             order='date',
             maxResults=1
         )
-        response = request.execute()
+        search_response = search_request.execute()
 
-        if response['items']:
-            latest_video = response['items'][0]
-            return {
-                'title': latest_video['snippet']['title'],
-                'video_id': latest_video['id']['videoId'],
-                'published_at': latest_video['snippet']['publishedAt'],
-                'thumbnail_url': latest_video['snippet']['thumbnails']['high']['url'],
-                'channel_title': latest_video['snippet']['channelTitle']
-            }
+        if search_response['items']:
+            latest_video = search_response['items'][0]
+
+            # Retrieve the video ID
+            video_id = latest_video['id']['videoId']
+
+            # Get additional details about the video, including duration
+            video_request = youtube.videos().list(
+                part='contentDetails',
+                id=video_id
+            )
+            video_response = video_request.execute()
+
+            if video_response['items']:
+                video_details = video_response['items'][0]
+                duration = video_details['contentDetails']['duration']
+
+                # Parse the duration
+                duration_in_seconds = isodate.parse_duration(duration).total_seconds()
+
+                # Check if the video is longer than 60 seconds
+                if 60 < duration_in_seconds <= 3600:
+                    return {
+                        'title': latest_video['snippet']['title'],
+                        'video_id': video_id,
+                        'published_at': latest_video['snippet']['publishedAt'],
+                        'thumbnail_url': latest_video['snippet']['thumbnails']['high']['url'],
+                        'channel_title': latest_video['snippet']['channelTitle']
+                    }
+                else:
+                    print(f"Skipped a short video: {latest_video['snippet']['title']}")
+                    return None
         return None
     except HttpError as e:
         print(f"An HTTP error occurred: {e}")
